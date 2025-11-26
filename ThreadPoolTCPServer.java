@@ -13,7 +13,7 @@ public class ThreadPoolTCPServer {
 
     public ThreadPoolTCPServer(int port) {
         this.port = port;
-        this.threadPool = Executors.newFixedThreadPool(10); // fixed pool of 10 threads
+        this.threadPool = Executors.newFixedThreadPool(10); // fixed pool size
     }
 
     public void launch() {
@@ -25,21 +25,32 @@ public class ThreadPoolTCPServer {
                 Socket clientSocket = serverSocket.accept();
                 int clientId = clientCounter.incrementAndGet();
 
-                // submit task to thread pool
+                // Submit task to pool
                 threadPool.execute(() -> {
                     ConnectionThread handler =
                         new ConnectionThread(clientSocket, clientId);
-
-                    handler.run(); 
-                    // run() is called directly because we’re already inside a worker thread
+                    handler.run(); // run directly inside worker thread
                 });
 
-                System.out.println("Active pool threads: " + Thread.activeCount());
+                // Monitor server load
+                printThreadStats();
             }
 
         } catch (IOException e) {
             System.err.println("Server error: " + e.getMessage());
         }
+    }
+
+    // ===========================
+    // MONITORING FUNCTION
+    // ===========================
+    private void printThreadStats() {
+        Runtime runtime = Runtime.getRuntime();
+        System.out.println("=== Thread Statistics ===");
+        System.out.println("Active threads: " + (Thread.activeCount() - 1));
+        System.out.println("Memory usage: " +
+            (runtime.totalMemory() - runtime.freeMemory()) / 1024 + " KB");
+        System.out.println("==========================");
     }
 
     public void shutdown() {
