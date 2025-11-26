@@ -36,7 +36,12 @@ public class TCPClient {
                         new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true)) {
             System.out.println("Connected to server.");
             System.out.println("Type message and press Enter.");
-            System.out.println("Type /quit to exit.");
+            System.out.println("Type 'quit' or '/quit' to exit.");
+            String welcome = in.readLine();
+            if (welcome != null) {
+                System.out.println("--------------------------------------");
+                System.out.println("Server: " + welcome);
+            }
 
             String userInput;
 
