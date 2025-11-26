@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,13 +11,10 @@ import java.net.UnknownHostException;
 /**
  * TCPClient for TP3
  *
- * - Connects to given host:port
- * - Reads user input from console
- * - Sends each non-empty line to server
- * - Prints server's echo
- * - Stops on /quit or when server closes connection
+ * - Connects to given host:port - Reads user input from console - Sends each
+ * non-empty line to server - Prints server's echo - Stops on /quit or when
+ * server closes connection
  */
-
 public class TCPClient {
 
     private String host;
@@ -31,15 +29,11 @@ public class TCPClient {
         System.out.println("Connecting to server " + host + ":" + port + "...");
 
         try (
-                Socket socket = new Socket(host, port);
-                // Use system default encoding for console (on your Windows it's CP936/GBK)
-                BufferedReader consoleReader = new BufferedReader(
-                        new InputStreamReader(System.in));
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream(), "UTF-8"));
-                PrintWriter out = new PrintWriter(
-                        new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true)
-        ) {
+                Socket socket = new Socket(host, port); // Use system default encoding for console (on your Windows it's CP936/GBK)
+                 BufferedReader consoleReader = new BufferedReader(
+                        new InputStreamReader(System.in)); BufferedReader in = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream(), "UTF-8")); PrintWriter out = new PrintWriter(
+                        new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true)) {
             System.out.println("Connected to server.");
             System.out.println("Type message and press Enter.");
             System.out.println("Type /quit to exit.");
@@ -60,9 +54,18 @@ public class TCPClient {
                     continue;
                 }
 
-                if ("/quit".equalsIgnoreCase(userInput)) {
+                if ("/quit".equalsIgnoreCase(userInput) || "quit".equalsIgnoreCase(userInput)) {
+                    // Tell server we are quitting
+                    out.println("quit");
+
+                    // Optionally read server's goodbye message
+                    String response = in.readLine();
+                    if (response != null) {
+                        System.out.println("Server: " + response);
+                    }
+
                     System.out.println("Closing connection and exiting client.");
-                    break;
+                    break;  // Jump out of the loop to close socket
                 }
 
                 // Send to server

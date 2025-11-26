@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,13 +22,15 @@ public class ConnectionThread extends Thread {
         String clientAddress = clientSocket.getInetAddress().getHostAddress();
         int clientPort = clientSocket.getPort();
 
-        System.out.println("[" + LocalDateTime.now() + "] Client#"
-                + clientId + " connected from " + clientAddress + ":" + clientPort);
+        System.out.println("[" + LocalDateTime.now() + "] Client#" 
+            + clientId + " connected from " + clientAddress + ":" + clientPort);
 
         try (
                 BufferedReader in = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream(), "UTF-8")); PrintWriter out = new PrintWriter(
-                        new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"), true)) {
+                        new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
+                PrintWriter out = new PrintWriter(
+                        new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"), true)
+        ) {
 
             out.println("Welcome! You are client #" + clientId);
 
@@ -37,21 +38,11 @@ public class ConnectionThread extends Thread {
             String prefix = "[client#" + clientId + " " + clientAddress + "] ";
 
             while ((line = in.readLine()) != null) {
-                String trimmed = line.trim();
-                String record = prefix + trimmed;
+                String record = prefix + line;
 
-                // Print received message to server console
                 System.out.println(record);
 
-                // 1) Check for quit command
-                if (trimmed.equalsIgnoreCase("quit") || trimmed.equalsIgnoreCase("/quit")) {
-                    // Send goodbye message to client
-                    out.println("Goodbye, client #" + clientId + "!");
-                    // Jump out of the loop and close connection
-                    break;
-                }
-
-                // 2) Normal message, echo back to client
+                // Echo back to client
                 out.println(record);
             }
 
@@ -69,7 +60,7 @@ public class ConnectionThread extends Thread {
             System.err.println("Error closing socket for client#" + clientId);
         }
 
-        System.out.println("[" + LocalDateTime.now() + "] Client#"
-                + clientId + " disconnected.");
+        System.out.println("[" + LocalDateTime.now() + "] Client#" 
+            + clientId + " disconnected.");
     }
 }
